@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract JobMarketplace {
+    struct Job {
+        address employer;
+        address freelancer;
+        uint256 payment;
+        bool completed;
+    }
+
+    mapping(uint256 => Job) public jobs;
+    uint256 public jobCount;
+
+    function postJob(uint256 payment) public payable {
+        require(msg.value == payment, "Incorrect payment");
+
+        jobCount++;
+        jobs[jobCount] = Job(msg.sender, address(0), payment, false);
+    }
+
+    function acceptJob(uint256 jobId) public {
+        Job storage job = jobs[jobId];
+        require(job.freelancer == address(0), "Job already taken");
+        job.freel
