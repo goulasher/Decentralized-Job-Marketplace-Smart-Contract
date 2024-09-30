@@ -22,4 +22,24 @@ contract JobMarketplace {
     function acceptJob(uint256 jobId) public {
         Job storage job = jobs[jobId];
         require(job.freelancer == address(0), "Job already taken");
-        job.freel
+        job.freelancer = msg.sender;
+    }
+
+    function completeJob(uint256 jobId) public {
+        Job storage job = jobs[jobId];
+        require(msg.sender == job.freelancer, "Only freelancer can complete job");
+        require(!job.completed, "Job already completed");
+
+        job.completed = true;
+        payable(job.freelancer).transfer(job.payment);
+    }
+
+    function cancelJob(uint256 jobId) public {
+        Job storage job = jobs[jobId];
+        require(msg.sender == job.employer, "Only employer can cancel job");
+        require(job.freelancer == address(0), "Job already taken");
+
+        payable(job.employer).transfer(job.payment);
+        job.completed = true;
+    }
+}
